@@ -1,0 +1,9 @@
+pandas
+statsmodels
+cohere
+pyspark-connect
+tensorflow
+psycopg2-binary 
+numpy
+scikit-learn
+tabulate

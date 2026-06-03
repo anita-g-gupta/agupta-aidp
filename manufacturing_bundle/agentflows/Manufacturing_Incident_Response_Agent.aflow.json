@@ -1,0 +1,214 @@
+{
+  "displayName" : "Manufacturing_Incident_Response_Agent",
+  "description" : "Monitors production line performance, investigates machine-level root causes using ERP data and maintenance logs, and assesses delivery impact on customer orders. Provides data-driven response options by analyzing spare parts availability, rerouting capacity, and projected delay timelines",
+  "pathInfo" : "${bundle.root}/.aidp/artifacts/Agent_flows",
+  "type" : "CANVAS",
+  "entryFilePath" : null,
+  "dependenciesFilePath" : null,
+  "computeKey" : "${agentflows.dependencies.Test.aicompute.key}",
+  "diagram" : {
+    "key" : "7a9bfe0a-fb01-4fc4-94e5-c2f38549ed66",
+    "displayName" : "test",
+    "description" : "Monitors production line performance, investigates machine-level root causes using ERP data and maintenance logs, and assesses delivery impact on customer orders. Provides data-driven response options by analyzing spare parts availability, rerouting capacity, and projected delay timelines",
+    "nodes" : {
+      "c80aa743-fac7-4d2b-9d3c-5e38fe95d2d9" : {
+        "type" : "AGENT",
+        "nodeType" : null,
+        "name" : "AGENT_834909",
+        "description" : "AGENT_description_260742",
+        "positionX" : 294.0,
+        "positionY" : 32.0,
+        "isExpanded" : null,
+        "parentNodeId" : null,
+        "configuration" : null,
+        "nodeTypeId" : null,
+        "key" : "c80aa743-fac7-4d2b-9d3c-5e38fe95d2d9",
+        "timeCreated" : null,
+        "timeUpdated" : null,
+        "inputs" : null,
+        "outputs" : null,
+        "validationErrors" : null,
+        "instructions" : "You are an AI production incident response assistant for CE-Facility-01, \na consumer electronics manufacturing facility. You help production \nsupervisors assess and respond to quality and machine incidents using \nreal-time data from Oracle Fusion ERP and Oracle SCM.\n\nCRITICAL RULE — CONVERSATIONAL FLOW:\nYou must follow a strict 3-stage conversation. Never skip ahead. Never \nvolunteer information from a future stage. Answer only what the current \nstage requires, then ask one specific follow-up question to guide the \nsupervisor to the next stage.\n\nSTAGE 1 — DETECTION (when asked \"what is going on\" or similar):\nCall ONLY defect_alert.\nReport: which line is breaching, defect rate, which machine.\nThen say: \"Shall I investigate this machine further — risk profile, failure probability, and past maintenance records?\"\nSTOP.\n\nSTAGE 2 — ROOT CAUSE (when asked to investigate the machine or what is wrong):\nCall machine_risk_profile, machine_failure_scores, and the technician logs RAG tool.\nReport: risk level, incident count, ML failure probability, and relevant findings from past inspection logs.\nThen say: \"Shall I check the impact on customer deliveries?\"\nSTOP.\n\nSTAGE 3 — BUSINESS IMPACT (when asked about impact or deliveries):\nCall at_risk_orders AND the delay impact calculator prompt tool.\nReport: which orders, units, revenue at risk, projected delay in days.\nThen say: \"Shall I check available response options?\"\nSTOP.\n\nSTAGE 4 — OPTIONS (when asked for options or what to do):\nCall spare_parts_availability and line_rerouting_options.\nThen call the decision panel prompt tool to present three options.\nPresent the options and let the supervisor decide.\n\nDATA ACCURACY RULES — NON NEGOTIABLE:\n- Always use exact values returned by tools — never substitute, \n  paraphrase, or invent IDs\n- Never use placeholder values like ORD-XXXX or SP-XXXX — always use \n  real tool output\n- If a tool returns no data, say so explicitly — do not fabricate data\n- Machine IDs, order IDs, part numbers, warehouse locations and delay \ndays must match tool output exactly\n- Delay days in all three options must come from get_delay_impact tool \n-- Never use \"do nothing\" or \"do-nothing\". Use \"if no action is taken\" or \"under current trajectory\" instead.\n- Never use \"you\". Use \"the supervisor\" or passive voice.\n\n\nFORMATTING RULES:\n- Use clear line breaks between sections\n- Use bullet points for listing data points\n- Bold key values like machine IDs, order numbers, and status levels\n- Separate each data item on its own line, never combine multiple orders in one sentence\n- Keep responses scannable — a supervisor should be able to glance and understand in 5 seconds",
+        "llm" : {
+          "modelId" : "xai.grok-4.3",
+          "provider" : "xai",
+          "regionId" : "us-ashburn-1"
+        },
+        "modelSettings" : null,
+        "memory" : null,
+        "tools" : [ {
+          "toolType" : "SQL",
+          "key" : "14ab107a-d6e8-4ae1-afdb-6e27fbbd3dea",
+          "displayName" : "get_delay_impact",
+          "workspaceKey" : null,
+          "description" : "Name: get_delay_impact\n\n",
+          "isReference" : null,
+          "positionX" : 128.0,
+          "positionY" : 194.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "SELECT *\nFROM aidp.\"delay_impact\"\n",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        }, {
+          "toolType" : "PROMPT",
+          "key" : "630094ba-6cb5-4dcc-a3e9-997944882328",
+          "displayName" : "PROMPT_573504",
+          "workspaceKey" : null,
+          "description" : "You are an operational decision support assistant for a manufacturing facility.\n\nYou have been given delivery impact data from the delay calculation tool. \nFormat this into a clear three-option decision panel for the supervisor.\n\nRules:\n- Always show all three options\n- Always show delay days per order for each option\n- Highlight Option 2 as the recommended action\n- Keep language operational and concise\n- Never invent numbers — only use what the tool returned\n- Do NOT end with \"Which option does the supervisor select?\" or similar\n- End with: \"The analysis is based on current production data, maintenance history, inventory availability, and projected delivery impact. I can drill into any option further if needed.\"\nFormat your response exactly like this:\n\nDELIVERY IMPACT ANALYSIS — M-102 INCIDENT\nSource: Delay Impact Calculator Tool \n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOPTION 1 — No Action, Monitor Risk\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n❌ ORD-8812 (WM-8800, Critical): {opt1_delay} day delay — ships {opt1_date}\n❌ ORD-8819 (WM-9000, Critical): {opt1_delay} day delay — ships {opt1_date}\nRisk: Both critical shipments miss promised delivery dates\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOPTION 2 — Fix Now + Reroute to Line 5  ⭐ RECOMMENDED\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ ORD-8812 (WM-8800, Critical): {opt2_delay} day delay — ships {opt2_date}\n✅ ORD-8819 (WM-9000, Critical): {opt2_delay} day delay — ships {opt2_date}\nAction: 4hr maintenance pause on M-102, production rerouted to Line 5\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOPTION 3 — Add Evening Shift, Defer Maintenance\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ ORD-8812 (WM-8800, Critical): {opt3_delay} day delay — ships {opt3_date}\n✅ ORD-8819 (WM-9000, Critical): {opt3_delay} day delay — ships {opt3_date}\nRisk: Root cause not addressed — spindle failure risk remains\n\n",
+          "isReference" : null,
+          "positionX" : 392.0,
+          "positionY" : 207.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "llm" : {
+              "modelId" : "xai.grok-4.3",
+              "provider" : "xai",
+              "regionId" : "us-ashburn-1"
+            },
+            "promptText" : "Generate three decision options for the production supervisor based on the current incident data, spare parts availability, and line rerouting capacity.",
+            "modelSettings" : null
+          }
+        }, {
+          "toolType" : "SQL",
+          "key" : "1c7395d2-23f5-4e34-9499-0fb042018df7",
+          "displayName" : "defect_alert",
+          "workspaceKey" : null,
+          "description" : "Checks active defect rate breaches on production lines.",
+          "isReference" : null,
+          "positionX" : 524.0,
+          "positionY" : 217.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "SELECT * FROM aidp.\"defect_alert\"",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        }, {
+          "toolType" : "SQL",
+          "key" : "44a580a9-25d1-409a-85ed-1c4ac4d4a46c",
+          "displayName" : "machine_risk_profile",
+          "workspaceKey" : null,
+          "description" : "Gets machine risk level, incident history, and maintenance status.",
+          "isReference" : null,
+          "positionX" : 687.0,
+          "positionY" : 214.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "SELECT * FROM aidp.\"machine_risk_profile\" ORDER BY \"risk_score\" DESC",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        }, {
+          "toolType" : "RAG",
+          "key" : "84f4bd3f-047e-4f8d-8bc1-8986ebfb2464",
+          "displayName" : "inspection_logs",
+          "workspaceKey" : null,
+          "description" : "Searches unstructured technician maintenance logs and inspection notes for Machine history.\nUse when the supervisor asks about past maintenance issues or root cause context.",
+          "isReference" : null,
+          "positionX" : 240.0,
+          "positionY" : 227.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : {
+            "query" : ""
+          },
+          "toolConfig" : {
+            "catalogKey" : "manufacturing_facility_ops",
+            "schemaKey" : "bronze",
+            "knowledgeBase" : "inspection_logs",
+            "llm" : {
+              "modelId" : "xai.grok-4.3",
+              "provider" : "xai",
+              "regionId" : "us-ashburn-1"
+            },
+            "modelSettings" : null,
+            "topK" : null
+          }
+        }, {
+          "toolType" : "SQL",
+          "key" : "b1bbc57f-d662-4526-9596-27f8a9419617",
+          "displayName" : "at_risk_orders",
+          "workspaceKey" : null,
+          "description" : "Gets available production lines with capacity headroom for rerouting.",
+          "isReference" : null,
+          "positionX" : 825.6041,
+          "positionY" : 210.75,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "SELECT * FROM aidp.\"at_risk_orders\"",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        }, {
+          "toolType" : "SQL",
+          "key" : "9e9a129a-879f-4866-a739-9d3c2828a339",
+          "displayName" : "ML_machine_failure_scores",
+          "workspaceKey" : null,
+          "description" : "Gets ML model failure probability scores for machines.",
+          "isReference" : null,
+          "positionX" : 940.6041,
+          "positionY" : 208.75,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "SELECT * FROM aidp.\"machine_failure_scores\"",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        } ]
+      }
+    },
+    "edges" : { },
+    "toolMap" : null,
+    "guardrailsMap" : null
+  },
+  "guardrails" : null,
+  "sessionConfig" : {
+    "variables" : { },
+    "sessionRetentionConfig" : null
+  }
+}

@@ -1,0 +1,8 @@
+---
+bundle:
+  name: "manufacturing_bundle"
+resources:
+  jobs:
+  - "manufacturing_facility_ops"
+  agentflows:
+  - "Manufacturing_Incident_Response_Agent"

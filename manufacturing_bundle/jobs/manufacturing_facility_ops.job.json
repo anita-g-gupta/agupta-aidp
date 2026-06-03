@@ -1,0 +1,159 @@
+{
+  "runAs" : null,
+  "name" : "manufacturing_facility_ops",
+  "description" : "",
+  "schedule" : null,
+  "continuous" : null,
+  "maxConcurrentRuns" : 1,
+  "gitConfig" : null,
+  "queue" : null,
+  "path" : "/Workspace/jobs",
+  "jobClusters" : [ {
+    "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+    "newCluster" : null
+  } ],
+  "tasks" : [ {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "Bronze_ingestion",
+    "dependsOn" : [ ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : false,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/manufacturing_facility_ops/bronze_ingestion.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "Silver_Transforms",
+    "dependsOn" : [ {
+      "taskKey" : "Bronze_ingestion",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/manufacturing_facility_ops/silver_transforms.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "gold_agent_views",
+    "dependsOn" : [ {
+      "taskKey" : "Silver_Transforms",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/manufacturing_facility_ops/gold_agent_views.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "IF_ELSE_TASK",
+    "taskKey" : "check_defect_alert",
+    "dependsOn" : [ {
+      "taskKey" : "gold_agent_views",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "expressions" : [ {
+      "key" : "A",
+      "value" : "{{tasks.gold_agent_views.state}} == \"SUCCESS\""
+    } ],
+    "condition" : "{{tasks.gold_agent_views.state}} == \"SUCCESS\"",
+    "parameters" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "run_ml_model",
+    "dependsOn" : [ {
+      "taskKey" : "check_defect_alert",
+      "outcome" : "true"
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/manufacturing_facility_ops/predictive_maintenance_model.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "PYTHON_TASK",
+    "taskKey" : "Log_No_Incident",
+    "dependsOn" : [ {
+      "taskKey" : "check_defect_alert",
+      "outcome" : "true"
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "filePath" : "${bundle.root}/.aidp/artifacts/manufacturing_facility_ops/log_no_incident.py",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "commandLineArguments" : null,
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "push_to_ai_lakehouse",
+    "dependsOn" : [ {
+      "taskKey" : "run_ml_model",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : false,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/manufacturing_facility_ops/push_to_ai_lakehouse.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : false
+  } ],
+  "parameters" : null,
+  "timeoutSeconds" : null,
+  "jobTag" : null
+}
