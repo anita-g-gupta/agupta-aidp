@@ -1,0 +1,5 @@
+bundle:
+  name: "utilities"
+resources:
+  agentflows:
+  - "asset_intelligence_agent"

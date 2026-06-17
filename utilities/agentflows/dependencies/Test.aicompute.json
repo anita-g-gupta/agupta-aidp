@@ -1,0 +1,15 @@
+{
+  "displayName" : "Test",
+  "description" : null,
+  "type" : "AGENT_FLOW_COMPUTE",
+  "nodeType" : null,
+  "driverConfig" : {
+    "driverNodeType" : null,
+    "driverShape" : "amd.generic",
+    "driverShapeConfig" : {
+      "ocpus" : 4,
+      "gpus" : 0,
+      "memoryInGBs" : 32
+    }
+  }
+}

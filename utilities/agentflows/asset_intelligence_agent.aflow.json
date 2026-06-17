@@ -1,0 +1,147 @@
+{
+  "displayName" : "asset_intelligence_agent",
+  "description" : null,
+  "pathInfo" : "${bundle.root}/.aidp/artifacts/Agent_flows",
+  "type" : "CANVAS",
+  "entryFilePath" : null,
+  "dependenciesFilePath" : null,
+  "computeKey" : "${agentflows.dependencies.Test.aicompute.key}",
+  "diagram" : {
+    "key" : "69fcfd7c-6aed-4e7f-83b0-45f94bb09380",
+    "displayName" : "asset_intelligence_agent",
+    "description" : "",
+    "modelVersion" : null,
+    "nodes" : {
+      "d0c56d82-09d7-4378-a641-3f6c7a8b1f2a" : {
+        "type" : "AGENT",
+        "nodeType" : null,
+        "name" : "Asset_intelligence_agent",
+        "description" : "AGENT_description_769057",
+        "positionX" : 153.0,
+        "positionY" : 83.0,
+        "isExpanded" : null,
+        "parentNodeId" : null,
+        "configuration" : null,
+        "nodeTypeId" : null,
+        "key" : "d0c56d82-09d7-4378-a641-3f6c7a8b1f2a",
+        "timeCreated" : null,
+        "timeUpdated" : null,
+        "inputs" : null,
+        "outputs" : null,
+        "validationErrors" : null,
+        "instructions" : "- You are an intelligent grid operations advisor for a utility company.\nYour job is to help operators prevent asset failures BEFORE they happen by combining \nreal-time data, historical records, and field expertise. \nDo not give recommended action unless asked. Do not reply why this asset is at risk unless asked.\nAlways answer in third party - example it is recommended that",
+        "llm" : {
+          "modelId" : "xai.grok-4",
+          "provider" : "xai",
+          "regionId" : "us-ashburn-1"
+        },
+        "modelSettings" : null,
+        "memory" : null,
+        "tools" : [ {
+          "toolType" : "RAG",
+          "key" : "5e3f541d-3b0d-43f6-893d-f740dc56b03b",
+          "displayName" : "RAG_Outage_Technician_maintenance",
+          "workspaceKey" : null,
+          "description" : "This tool retrieves context from utility field documents including technician inspection notes, \noutage incident reports, and maintenance standard operating procedures (SOPs). \nUse this tool when answering questions about why an asset failed, what was observed in the field, \nwhat caused a past outage, or what the recommended maintenance action is per official guidelines.Only answer what is asked one at a time.Reason which document is needed to answer a scecific question.When the question asks about thresholds, limits, or whether metrics \nare within acceptable range — retrieve maintenance standard operating procedures (SOPs) and check \neach metric (temperature, vibration, load, oil pressure, aging) \nagainst the asset's current values. ",
+          "positionX" : 50.0,
+          "positionY" : 283.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : {
+            "query" : ""
+          },
+          "toolConfig" : {
+            "catalogKey" : "utilities_asset_failure",
+            "schemaKey" : "bronze",
+            "knowledgeBase" : "technician_notes",
+            "llm" : {
+              "modelId" : "xai.grok-4",
+              "provider" : "xai",
+              "regionId" : "us-ashburn-1"
+            },
+            "modelSettings" : null,
+            "topK" : 5
+          }
+        }, {
+          "toolType" : "PROMPT",
+          "key" : "ea817eac-efbc-4bc1-8250-ced7bb7ccba5",
+          "displayName" : "PROMPT_Insights",
+          "workspaceKey" : null,
+          "description" : "This tool generates the final response to the user. It combines structured asset data \nfrom the SQL tool and field context from the RAG tool into a clear, actionable answer. \nUse this tool to synthesize findings and present them in plain English to grid operators.",
+          "positionX" : 432.0,
+          "positionY" : 270.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "llm" : {
+              "modelId" : "xai.grok-4",
+              "provider" : "xai",
+              "regionId" : "us-ashburn-1"
+            },
+            "promptText" : "You are an AI-powered Asset Failure Intelligence assistant for a utility grid operations team.\n\nYou have access to two sources of information:\n1. Structured data — real-time sensor readings, risk scores, load levels, and maintenance history from the Gold layer tables\n2. Unstructured documents — technician field notes, outage incident reports, and maintenance SOPs\n\nWhen answering questions, always follow this structure:\n\n**Status:**\nSummarize the current sensor and risk data for the asset.\n\n**Why it's at risk:**\nExplain the root cause using field notes, outage history, and maintenance records.\n\n**SOP says:**\nQuote the relevant maintenance rule or threshold from official procedures.\n\n**Action:**\nGive one clear, specific action the operator should take and by when.\n\nRules:\n- Always mention the asset ID (e.g. T-204) in your response\n- Be concise — operators are busy, get to the point\n- If data is missing, say so clearly rather than guessing\n- Prioritize safety over cost",
+            "modelSettings" : null
+          }
+        }, {
+          "toolType" : "SQL",
+          "key" : "92f8aad0-43eb-4b29-bbc4-0f171979f70f",
+          "displayName" : "SQL_health_features",
+          "workspaceKey" : null,
+          "description" : "Use this tool to fetch asset details",
+          "positionX" : 322.0,
+          "positionY" : 274.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "SELECT *\nFROM aidp.\"asset_health_features\"\n",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        }, {
+          "toolType" : "SQL",
+          "key" : "d4b13411-0d14-4751-87f5-f8be60e8ad5d",
+          "displayName" : "SQL_asset_risk_scores",
+          "workspaceKey" : null,
+          "description" : "if customer is asking risk scores use this table or question like which asset is at highest risk, use this tool",
+          "positionX" : 190.0,
+          "positionY" : 272.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "SELECT *\nFROM aidp.\"asset_risk_scores\"\n",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        } ],
+        "toolReferences" : null
+      }
+    },
+    "edges" : { },
+    "toolsMap" : null,
+    "guardrailsMap" : null
+  },
+  "guardrails" : null,
+  "sessionConfig" : {
+    "variables" : { },
+    "sessionRetentionConfig" : null
+  },
+  "agentCardConfig" : null
+}
