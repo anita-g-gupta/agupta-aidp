@@ -1,0 +1,2 @@
+libraries:
+- "${bundle.root}/artifacts/requirements.txt"

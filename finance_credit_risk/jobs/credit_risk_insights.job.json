@@ -1,0 +1,125 @@
+{
+  "runAs" : null,
+  "name" : "credit_risk_insights",
+  "description" : "The pipeline runs automatically each day to refresh credit risk insights.",
+  "schedule" : {
+    "quartzCronExpression" : "0 37 11/1 * * ?",
+    "timezoneId" : "UTC",
+    "pauseStatus" : "PAUSED"
+  },
+  "continuous" : null,
+  "maxConcurrentRuns" : 1,
+  "gitConfig" : null,
+  "queue" : null,
+  "path" : "/Workspace/jobs",
+  "jobClusters" : [ {
+    "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+    "newCluster" : null
+  } ],
+  "tasks" : [ {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "Data_Ingestion",
+    "dependsOn" : [ ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : false,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/credit_risk_assessment/notebooks/01_data_ingestion.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "Bronze_to_Silver_DeltaT",
+    "dependsOn" : [ {
+      "taskKey" : "Data_Ingestion",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/credit_risk_assessment/notebooks/02_bronze_to_silver.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "Feature_Engineering",
+    "dependsOn" : [ {
+      "taskKey" : "Bronze_to_Silver_DeltaT",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/credit_risk_assessment/notebooks/03_feature_engineering.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "Model_Scoring",
+    "dependsOn" : [ {
+      "taskKey" : "Feature_Engineering",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/credit_risk_assessment/notebooks/04_predictive_model.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  }, {
+    "type" : "NOTEBOOK_TASK",
+    "taskKey" : "Risk_Agent_Analysis",
+    "dependsOn" : [ {
+      "taskKey" : "Model_Scoring",
+      "outcome" : null
+    } ],
+    "runIf" : "ALL_SUCCESS",
+    "maxRetries" : 0,
+    "minRetryIntervalMillis" : null,
+    "isRetryOnTimeout" : null,
+    "notebookPath" : "${bundle.root}/.aidp/artifacts/credit_risk_assessment/notebooks/05_agent_analysis.ipynb",
+    "source" : null,
+    "gitConfig" : null,
+    "cluster" : {
+      "clusterKey" : "${jobs.dependencies.SparkCluster.compute.key}",
+      "newCluster" : null
+    },
+    "parameters" : [ ],
+    "timeoutSeconds" : null,
+    "isStreaming" : null
+  } ],
+  "parameters" : null,
+  "timeoutSeconds" : null,
+  "jobTag" : null
+}

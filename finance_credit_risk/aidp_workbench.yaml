@@ -1,0 +1,7 @@
+bundle:
+  name: "finance_credit_risk"
+resources:
+  jobs:
+  - "credit_risk_insights"
+  agentflows:
+  - "credit_risk_agent_new"

@@ -1,0 +1,126 @@
+{
+  "displayName" : "credit_risk_agent_new",
+  "description" : null,
+  "pathInfo" : "${bundle.root}/.aidp/artifacts/Agent_flows",
+  "type" : "CANVAS",
+  "entryFilePath" : null,
+  "dependenciesFilePath" : null,
+  "computeKey" : "${agentflows.dependencies.Test.aicompute.key}",
+  "diagram" : {
+    "key" : "adfad22c-7451-4361-b0f5-d9819033ae31",
+    "displayName" : "credit_risk_agent_new",
+    "description" : "",
+    "modelVersion" : null,
+    "nodes" : {
+      "c48d3193-b5e3-4e0f-920e-5fd319410f59" : {
+        "type" : "AGENT",
+        "nodeType" : null,
+        "name" : "credit_risk_agent",
+        "description" : "credit risk agent",
+        "positionX" : 654.0,
+        "positionY" : 101.0,
+        "isExpanded" : null,
+        "parentNodeId" : null,
+        "configuration" : null,
+        "nodeTypeId" : null,
+        "key" : "c48d3193-b5e3-4e0f-920e-5fd319410f59",
+        "timeCreated" : null,
+        "timeUpdated" : null,
+        "inputs" : null,
+        "outputs" : null,
+        "validationErrors" : null,
+        "instructions" : "search customer details. Only ask what is asked. For example unless recommendation is asked do not provide. if needed organize data in pivot tables , use icons to decorate the output. ",
+        "llm" : {
+          "modelId" : "xai.grok-4",
+          "provider" : "xai",
+          "regionId" : "us-ashburn-1"
+        },
+        "modelSettings" : null,
+        "memory" : null,
+        "tools" : [ {
+          "toolType" : "SQL",
+          "key" : "eba02570-15d9-4b03-8ab0-01d8b834edef",
+          "displayName" : "SQL_Fetch_customer_details",
+          "workspaceKey" : null,
+          "description" : "Search for customer details.",
+          "positionX" : 524.0,
+          "positionY" : 294.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "catalogKey" : "ai_lakehouse",
+            "schemaKey" : "aidp",
+            "query" : "select * from AIDP.loan_master",
+            "isRowLimitEnabled" : null,
+            "maxRows" : null
+          }
+        }, {
+          "toolType" : "RAG",
+          "key" : "cc3c5612-d937-48e2-91a5-e561fe5d815a",
+          "displayName" : "RAG_Policy_Documents",
+          "workspaceKey" : null,
+          "description" : "What are the credit policy guidelines that apply to this customer based on their risk profile?\n",
+          "positionX" : 739.0,
+          "positionY" : 292.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : {
+            "query" : ""
+          },
+          "toolConfig" : {
+            "catalogKey" : "credit_risk_assessment",
+            "schemaKey" : "bronze",
+            "knowledgeBase" : "credit_policy_guidelines",
+            "llm" : {
+              "modelId" : "xai.grok-4",
+              "provider" : "xai",
+              "regionId" : "us-ashburn-1"
+            },
+            "modelSettings" : null,
+            "topK" : 1
+          }
+        }, {
+          "toolType" : "PROMPT",
+          "key" : "a0b3f408-2932-4ec5-835b-2f625f53391a",
+          "displayName" : "PROMPT_Summary_Reports_format",
+          "workspaceKey" : null,
+          "description" : "use this to shape the final credit memo output. \n\nYou are a senior credit risk officer.\n\nYou are given:\n1. Customer loan and financial data\n2. Credit policy guidelines from the risk manual\n\nAnalyze the data and produce a structured credit risk memo with:\n\n1. Executive Summary\n2. Customer Financial Profile\n3. Key Risk Indicators\n4. Policy Compliance Check\n5. Key Risk Drivers\n6. Approval Authority Required\n7. Final Recommendation (APPROVE / MONITOR / REVIEW / REJECT)\n\nRules:\n- Base conclusions only on the provided data\n- Reference policy rules when making decisions\n- Write in professional credit memo language\n- Keep the memo concise but structured\n\n```\n\n---\nExample Output Your Agent Will Generate \nCredit Risk Assessment Analysis\nCustomer ID: 371\nBorrower: Northwind Logistics\n\nExecutive Summary\nNorthwind Logistics has requested a $1.2M term loan for 60 months.\nBased on financial performance, collateral coverage, and a probability of default of 4.5%, the borrower presents moderate credit risk.\nThe loan is within acceptable policy thresholds but falls into the moderate risk monitoring category under internal credit policy.\n\nCustomer Financial Profile\n\t• Annual Revenue: $5.2M\n\t• EBITDA: $900K\n\t• Existing Debt: $1.8M\n\t• Debt-to-Income Ratio: 32%\n\t• Credit Score: 702\nThe company demonstrates stable revenue and consistent operating margins.\nKey Risk Indicators\n\t• Probability of Default: 4.5%\n\t• Loan-to-Value Ratio: 60%\n\t• Debt Leverage: Moderate\nCollateral coverage of $2M against a $1.2M loan provides adequate risk protection.\n\nPolicy Compliance Check\nRelevant credit policy rules applied:\n\t1. Moderate Risk Monitoring\n\t\t○ Condition: PD between 4%–7%\n\t\t○ Action: Enhanced monitoring required\n\t2. Loan Size Review\n\t\t○ Loan amount is below $1.5M threshold\n\t\t○ No credit committee escalation required\nThe loan is within policy guidelines.\n\nKey Risk Drivers\n\t• Moderate leverage\n\t• Transportation sector exposure\n\t• Dependence on operating cash flow stability\nApproval Authority\nBased on the policy matrix, Credit Manager approval authority is sufficient.\nFinal Recommendation\nRecommendation: MONITOR\nThe borrower demonstrates adequate financial strength and collateral coverage. The loan may be approved with periodic financial monitoring.\n",
+          "positionX" : 1041.0,
+          "positionY" : 293.0,
+          "properties" : null,
+          "timeCreated" : null,
+          "timeUpdated" : null,
+          "createdBy" : null,
+          "updatedBy" : null,
+          "inputSchema" : { },
+          "toolConfig" : {
+            "llm" : {
+              "modelId" : "xai.grok-4",
+              "provider" : "xai",
+              "regionId" : "us-ashburn-1"
+            },
+            "promptText" : "select * from AIDP.loan_master",
+            "modelSettings" : null
+          }
+        } ],
+        "toolReferences" : null
+      }
+    },
+    "edges" : { },
+    "toolsMap" : null,
+    "guardrailsMap" : null
+  },
+  "guardrails" : null,
+  "sessionConfig" : {
+    "variables" : { },
+    "sessionRetentionConfig" : null
+  },
+  "agentCardConfig" : null
+}
